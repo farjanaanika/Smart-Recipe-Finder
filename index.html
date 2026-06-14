@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Recipe Finder</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+    <script src="main.js"></script>
+    <div class="recipe-finder">  
+    <h1>Smart Recipe Finder</h1>
+    <form>
+        <input
+        type="text"
+        id="search-input"
+        placeholder="search recipe by name(eg. 'chicken')"
+        required
+        />
+        <button type="submit" id="search button">Search</button>
+    </form>
+    <div class="random-button-container">
+        <button id="random-button" class="random-button">Get Random Recipe</button>
+    </div>
+    <div>
+        class="message" id="message-area"</div>
+        <div id="result-grid" class="result-grid">
+            <div class="reipe-item">
+                <img
+                 src="https://preppykitchen.com/wp-content/uploads/2024/02/Carrot-Cake-Recipe-Card.jpg" 
+                  alt="Carrot Cake Recipe"
+                >
+                <h3>Carrot Cake Recipe</h3>
+            </div>
+            <div class="reipe-item">
+                <img
+                 src="https://preppykitchen.com/wp-content/uploads/2024/02/Carrot-Cake-Recipe-Card.jpg" 
+                  alt="Carrot Cake"
+                >
+                <h3>Carrot Cake Recipe</h3>
+            </div>
+            <div class="reipe-item">
+                <img
+                 src="https://preppykitchen.com/wp-content/uploads/2024/02/Carrot-Cake-Recipe-Card.jpg" 
+                  alt="Carrot Cake"
+                >
+                <h3>Carrot Cake Recipe</h3>
+            </div>
+        </div>
+    </div>
+    <div class="modal-container hidden" id=" recipe-modal">
+        <div class="modal-contant">
+         <button id="modal-close-button" class="modal-close-button">+</button>
+         <div id="recipe-details-content">
+            <!-- Details will be loaded here -->
+             <h2>Carrot Cake</h2>
+             <img src="https://preppykitchen.com/wp-content/uploads/2024/02/Carrot-Cake-Recipe-Card.jpg"
+             alt="Carrot Cake">
+             <h3>Category: Dessert</h3>
+             <h3>Category: Dessert</h3>
+             <h3>Category: Dessert</h3>
+         </div>
+        </div>
+    </div>
+</body>
+</html>
