@@ -1,0 +1,96 @@
+:root{
+    --light-bg: #f8f9fa;
+    --text-dark: #343a40;
+    --primary-color: #4caf50;
+    --primary-dark: #45a049;
+}
+.recipe-item img {
+    width: 700px;
+    height: 600px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+}
+* {
+    margin : 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: "Poppins", sans-serif;
+    line-height: 1.7;
+    padding: 30px 15px;
+    background-color: var(--light-bg);
+    color: var(--text-dark);
+}
+.recipe-finder-container{
+    max-width: 1200px;
+    padding: 0 15px;
+    text-align: center;
+}
+h1{
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+    letter-spacing: -1px;
+}
+.search-box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    margin-inline: auto;
+    max-width: 600px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-radius: 8px;
+}
+
+#search-input {
+    padding: 15px 20px;
+    font-size: 1rem;
+    flex-grow: 1;
+    border: 1px solid #e9ecef;
+    border-radius: 8px 0 0 8px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+#search-input:focus {
+       border-color: var(--primary-color);
+}
+
+#search-button {
+       padding: 13px 25px ;
+       font-size: 1rem ;
+       font-weight: 600 ;
+       font-family: "Poppins", sans-serif;
+       background-color: var(--primary-color);
+       color: #fff;
+       border: none;
+       border-radius: 0 8px 8px 0;
+       cursor: pointer;
+       transition: background-color 0.5s ease;
+}
+#search-button:hover{
+    background-color: var(--primary-dark);
+
+}
+.random-button{
+    padding: 10px 25px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family:"Poppins", sans-serif  ;
+    background-color:#ff9800;
+    border: none ;
+    color: #fff ;
+    border-radius: 8px ;
+    cursor:pointer ;
+    transition: background-color 0.5s ease, transform 0.2s ease ;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) ;
+}
+.random-button:hover{
+    background-color: #f57c00;
+    transform: translateY(-2px);
+     
+}

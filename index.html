@@ -12,10 +12,9 @@
 
 </head>
 <body>
-    <script src="main.js"></script>
-    <div class="recipe-finder">  
+    <div class="recipe-finder-container">  
     <h1>Smart Recipe Finder</h1>
-    <form>
+    <form id="search-form" class="search-box">
         <input
         type="text"
         id="search-input"
@@ -28,15 +27,15 @@
         <button id="random-button" class="random-button">Get Random Recipe</button>
     </div>
     <div class="message" id="message-area"></div>
-        <div id="result-grid" class="result-grid">
-            <div class="reipe-item">
+        <div id="results-grid" class="results-grid">
+            <div class="recipe-item">
                 <img
                  src="https://preppykitchen.com/wp-content/uploads/2024/02/Carrot-Cake-Recipe-Card.jpg" 
                   alt="Carrot Cake Recipe"
                 >
                 <h3>Carrot Cake Recipe</h3>
             </div>
-            <div class="reipe-item">
+            <div class="recipe-item">
                 <img
                  src="https://preppykitchen.com/wp-content/uploads/2024/02/Carrot-Cake-Recipe-Card.jpg" 
                   alt="Carrot Cake"
@@ -91,5 +90,6 @@
           </div>
           </div>
           </div>
+          <script src="main.js"></script>
 </body>
 </html>
