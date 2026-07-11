@@ -2,13 +2,13 @@
 
 ## 📖 **Project Overview**
 
-**Smart Recipe Finder** is a responsive web application that helps users search for recipes and discover new meals using **TheMealDB API**. 
-The application provides recipe details, random recipe suggestions, loading feedback, and error handling to create a smooth and user-friendly 
-experience.
+**Smart Recipe Finder** is a responsive web application that helps users search for recipes and discover new meals using **TheMealDB API**. The application provides recipe details, random recipe suggestions, loading feedback, and error handling to create a smooth and user-friendly experience.
+
 ---
+
 # ✨ **Features**
 
-## ✅ **User Interface**
+## ✅ **Update 1 – User Interface**
 
 - **Responsive homepage design**
 - **Modern and clean user interface**
@@ -19,7 +19,7 @@ experience.
 
 ---
 
-## ✅ **Frontend Functionality**
+## ✅ **Update 2 – Frontend Functionality**
 
 - **Search recipes using TheMealDB API**
 - **Random recipe generator**
@@ -34,28 +34,40 @@ experience.
 
 - **HTML5**
 - **CSS3**
-- **JavaScript(ES6)**
+- **JavaScript (ES6)**
 - **TheMealDB API**
 
 ---
 
-# 🌐**API Used**
+# 🌐 **API Used**
+
 This project uses **TheMealDB API** to fetch recipe information.
+
 **API Source:**  
 https://www.themealdb.com/api.php
+
 ---
+
 # 🚀 **How to Run the Project**
+
 Follow these steps to run the project locally:
+
 **1. Clone the repository**
 
 ```bash
 git clone https://github.com/farjanaanika/Smart-Recipe-Finder.git
 ```
+
 **2. Open the project folder**
+
 **3. Open `index.html` in your web browser**
+
 **4. Search for recipes or click the "Get Random Recipe" button**
+
 ---
+
 # 📂 **Project Structure**
+
 ```
 Smart-Recipe-Finder/
 │
@@ -64,23 +76,33 @@ Smart-Recipe-Finder/
 ├── main.js
 ├── README.md
 ```
+
 ---
 
 # 📸 **Screenshots**
+
 Screenshots will be added in future updates.
+
 ---
+
 # 🔄 **Future Improvements**
+
 - **Favorites system using Local Storage**
 - **Ingredient-based recipe search**
 - **Recipe filters (Category, Cuisine, etc.)**
 - **Search history**
 - **User authentication**
 - **Backend integration using Node.js and MongoDB**
+
 ---
+
 # 👩‍💻 **Developer**
+
 **Farjana Jahan Anika**  
 **Computer Science & Engineering Student**
+
 ---
 
 # 📄 **License**
+
 This project is developed for **educational purposes**.
