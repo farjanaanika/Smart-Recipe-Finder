@@ -6,20 +6,20 @@
     <title>Smart Recipe Finder</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 
-</head>
-<body>
+     </head>
+    <body>
     <div class="recipe-finder-container">
     <nav class="navbar">
     <div class="logo">🍽 Smart Recipe Finder</div>
     <ul class="nav-links">
-        <li><a href="#">Home</a></li>
+    <li><a href="#">Home</a></li>
+    <li><a href="#" id="favorites-link">❤️ Favorites</a></li>
     </ul>
-</nav>
-
+       </nav>
     <section class="hero">
     <h1>Find Your Perfect Recipe</h1>
 
@@ -27,14 +27,14 @@
    Explore delicious recipes from around the world and discover your next favorite meal.
    </p>
 
-</section> 
+    </section> 
     <form id="search-form" class="search-box">
     <input
     type="text"
     id="search-input"
     placeholder="search recipe by name (eg. chicken)"
     required
-/>
+     />
         <button type="submit" id="search-button">Search</button>
     </form>
     <div class="random-button-container">
@@ -45,9 +45,9 @@
     <div id="loader" class="loader hidden">
     <div class="spinner"></div>
     <p>Loading recipes...</p>
-</div>
+    </div>
         <div id="results-grid" class="results-grid">
-            </div>
+        </div>
         </div>
     <div class="modal-container hidden" id="recipe-modal">
         <div class="modal-content">
