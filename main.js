@@ -10,7 +10,15 @@ const modalCloseButton = document.getElementById("modal-close-button");
 const recipeDetailsContent = document.getElementById("recipe-details-content");
 const favoritesLink = document.getElementById("favorites-link");
 let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+const suggestionsBox = document.getElementById("suggestions-box");
 
+    let timer;
+    searchInput.addEventListener("input",()=>{
+    clearTimeout(timer);
+    timer=setTimeout(()=>{
+    showSuggestions(searchInput.value.trim());
+    },300);
+    });
     searchForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const searchTerm = searchInput.value.trim();
@@ -30,8 +38,13 @@ let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
     if(event.target === recipeModal){
         recipeModal.classList.add("hidden");
     }
-
    });
+   document.addEventListener("click",(event)=>{
+    if(!suggestionsBox.contains(event.target)
+    && event.target!==searchInput){
+        suggestionsBox.style.display="none";
+    }
+    });
     function showRecipeModal(recipe) {
     recipeDetailsContent.innerHTML = `
         <h2>${recipe.strMeal}</h2>
@@ -43,24 +56,108 @@ let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
     `;
     recipeModal.classList.remove("hidden");
     }
+    async function showSuggestions(query){
+    if(query.length < 2){
+        suggestionsBox.style.display = "none";
+        return;
+    }
+    try{
+        const response = await fetch(
+            `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(query)}`
+        );
+        const data = await response.json();
+        suggestionsBox.innerHTML = "";
+        if(!data.meals){
+            suggestionsBox.style.display = "none";
+            return;
+        }
+        data.meals.slice(0,5).forEach(recipe=>{
+            const item=document.createElement("div");
+            item.classList.add("suggestion-item");
+            item.textContent=recipe.strMeal;
+            item.addEventListener("click",()=>{
+                searchInput.value=recipe.strMeal;
+                suggestionsBox.style.display="none";
+                searchRecipes(recipe.strMeal);
+            });
+            suggestionsBox.appendChild(item);
+        });
+        suggestionsBox.style.display="block";
+    }catch(error){
+        console.log(error);
+        suggestionsBox.style.display="none";
+    }
+}
     async function searchRecipes(query){
+
     try{
         loader.classList.remove("hidden");
         resultsGrid.innerHTML = "";
         resultsGrid.dataset.page = "search";
         messageArea.textContent = "";
-        const response = await fetch(
-         `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(query)}`
-         );
-        if(!response.ok){
-            throw new Error("Failed to fetch recipes");
+        const lowerQuery = query.toLowerCase();
+        let searchTerms = [query];
+        const words = query.split(" ");
+        if(words.length > 1){
+            searchTerms.push(words[0]);
+            searchTerms.push(words[words.length - 1]);
         }
-        const data = await response.json();
-        if(data.meals === null){
-            messageArea.textContent = "No recipes found. Try another recipe name.";
-        }else{
-            displayRecipes(data.meals);
+        let allRecipes = [];
+        let exactMatchFound = false;
+        for(let term of searchTerms){
+            const response = await fetch(
+                `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(term)}`
+            );
+            const data = await response.json();
+            if(data.meals){
+                allRecipes.push(...data.meals);
+            }
         }
+        allRecipes.forEach(recipe => {
+        if(recipe.strMeal.toLowerCase()
+       .includes(lowerQuery)){
+        exactMatchFound = true;
+       }
+      });
+        allRecipes = allRecipes.filter(
+            (recipe,index,self)=>
+            index === self.findIndex(
+                r => r.idMeal === recipe.idMeal
+            )
+        );
+    allRecipes.sort((a,b)=>{
+    const aName = a.strMeal.toLowerCase();
+    const bName = b.strMeal.toLowerCase();
+    let aScore = 0;
+    let bScore = 0;
+    words.forEach(word=>{
+        if(aName.includes(word.toLowerCase())){
+            aScore++;
+        }
+        if(bName.includes(word.toLowerCase())){
+            bScore++;
+        }
+    });
+    return bScore - aScore;
+   });
+   allRecipes = allRecipes.slice(0,6);
+
+    if(allRecipes.length > 0){
+    if(exactMatchFound){
+    messageArea.textContent = "";
+     }else{
+        messageArea.innerHTML =
+        `
+        <div class="search-info-message">
+       🔍 No exact recipe found for "<strong>${query}</strong>".<br>
+        Showing similar recipes you might like:
+        </div>
+        `;}
+    displayRecipes(allRecipes);
+   }else{
+    messageArea.textContent =
+    "No recipes found. Try another recipe name.";
+    }
     }catch(error){
         console.log(error);
         messageArea.textContent =
@@ -69,7 +166,7 @@ let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
     finally{
         loader.classList.add("hidden");
     }
-    }
+     }
     async function getRandomRecipe(){
     try{
         loader.classList.remove("hidden");
@@ -88,7 +185,6 @@ let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
         console.log(error);
         messageArea.textContent =
         "⚠️Unable to get a random recipe. Please try again.";
-
     }
     finally{
         loader.classList.add("hidden");
