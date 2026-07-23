@@ -33,9 +33,13 @@
     type="text"
     id="search-input"
     placeholder="search recipe by name (eg. chicken)"
+    autocomplete="off"
     required
-     />
-        <button type="submit" id="search-button">Search</button>
+    />
+    <button type="submit" id="search-button">
+        Search
+    </button>
+    <div id="suggestions-box" class="suggestions-box"></div>
     </form>
     <div class="random-button-container">
         <button id="random-button" class="random-button">Get Random Recipe</button>
