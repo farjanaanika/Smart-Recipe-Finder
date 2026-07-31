@@ -45,14 +45,52 @@ const suggestionsBox = document.getElementById("suggestions-box");
         suggestionsBox.style.display="none";
     }
     });
-    function showRecipeModal(recipe) {
+    async function showRecipeModal(recipe) {
+    const similarHTML = await loadSimilarRecipes(
+    recipe.strCategory,
+    recipe.idMeal
+    );
+    let ingredients = "";
+   for(let i = 1; i <= 20; i++){
+    if(recipe[`strIngredient${i}`]){
+        ingredients += `
+            <li>
+                ${recipe[`strMeasure${i}`]} 
+                ${recipe[`strIngredient${i}`]}
+            </li>
+        `;
+         }
+        }
     recipeDetailsContent.innerHTML = `
-        <h2>${recipe.strMeal}</h2>
-        <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
-        <p><strong>Category:</strong> ${recipe.strCategory}</p>
-        <p><strong>Area:</strong> ${recipe.strArea}</p>
-        <h3>Instructions</h3>
-        <p>${recipe.strInstructions}</p>
+    <h2>${recipe.strMeal}</h2>
+    <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
+    <div class="recipe-tags">
+    <span class="tag">🍽 ${recipe.strCategory}</span>
+    <span class="tag">🌍 ${recipe.strArea}</span>
+    </div>
+    <h3>Ingredients</h3>
+    <ul class="ingredients-list">
+    ${ingredients}
+     </ul>
+     <h3>Instructions</h3>
+    <p>${recipe.strInstructions}</p>
+    <div class="recipe-links">
+    ${
+        recipe.strYoutube
+        ? `<a href="${recipe.strYoutube}" target="_blank" class="recipe-btn youtube-btn">
+            ▶ Watch on YouTube
+           </a>`
+        : ""
+    }
+    ${
+        recipe.strSource
+        ? `<a href="${recipe.strSource}" target="_blank" class="recipe-btn source-btn">
+            🌐 View Original Recipe
+           </a>`
+        : ""
+    }
+    </div>
+    ${similarHTML}
     `;
     recipeModal.classList.remove("hidden");
     }
@@ -87,9 +125,8 @@ const suggestionsBox = document.getElementById("suggestions-box");
         console.log(error);
         suggestionsBox.style.display="none";
     }
-}
+     }
     async function searchRecipes(query){
-
     try{
         loader.classList.remove("hidden");
         resultsGrid.innerHTML = "";
@@ -202,6 +239,39 @@ const suggestionsBox = document.getElementById("suggestions-box");
         messageArea.textContent = "Unable to load recipe details.";
     } finally {
         loader.classList.add("hidden");
+    }
+     }
+     async function loadSimilarRecipes(category, currentRecipeId){
+    try{
+        const response = await fetch(
+            `https://www.themealdb.com/api/json/v1/1/filter.php?c=${encodeURIComponent(category)}`
+        );
+        const data = await response.json();
+        if(!data.meals){
+            return "";
+        }
+        const similarRecipes = data.meals
+            .filter(recipe => recipe.idMeal !== currentRecipeId)
+            .slice(0,4);
+        let html = `
+            <hr>
+            <h3>🍽 Similar Recipes</h3>
+            <div class="similar-recipes">
+        `;
+        similarRecipes.forEach(recipe=>{
+            html += `
+                <div class="similar-card"
+                     onclick="getRecipeDetails('${recipe.idMeal}')">
+                    <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
+                    <p>${recipe.strMeal}</p>
+                </div>
+            `;
+        });
+        html += `</div>`;
+        return html;
+    }catch(error){
+        console.log(error);
+        return "";
     }
      }
     function displayRecipes(recipes){
