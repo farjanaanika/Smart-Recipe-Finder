@@ -14,7 +14,7 @@ body{
     font-family: "Poppins", sans-serif;
     line-height: 1.7;
     padding: 30px 15px;
-    background-color: var(--light-bg);
+    background:#fff8f0;
     color: var(--text-dark);
 }
 .recipe-finder-container{
@@ -404,19 +404,71 @@ h1{
     color:white;
     transition:0.3s;
 }
-
 .youtube-btn{
     background:#ff0000;
 }
-
 .youtube-btn:hover{
     background:#cc0000;
 }
-
 .source-btn{
     background:#4caf50;
 }
-
 .source-btn:hover{
     background:#388e3c;
+}
+.footer{
+    margin-top:60px;
+    background:#2c3e50;
+    color:white;
+    width:100%;
+    padding:35px 20px;
+}
+.footer{
+    margin-top:70px;
+    background:#5c4033;
+    color:#fff;
+    width:100%;
+    padding:30px 20px;
+    border-radius:25px 25px 0 0;
+}
+.footer-content{
+    max-width:1200px;
+    margin:auto;
+    text-align:center;
+}
+.footer h2{
+    font-size:1.6rem;
+    margin-bottom:8px;
+}
+.footer p{
+    color:#f5e9df;
+    font-size:0.95rem;
+    margin-bottom:18px;
+}
+.social-icons{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+}
+.social-icons a{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.15);
+    color:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-decoration:none;
+    font-size:18px;
+    transition:0.3s;
+}
+.social-icons a:hover{
+    background:#ff9800;
+    transform:translateY(-4px) scale(1.08);
+}
+.copyright{
+    margin-top:20px;
+    font-size:0.85rem;
+    color:#e8d9cf;
 }

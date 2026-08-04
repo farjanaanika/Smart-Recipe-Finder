@@ -1,7 +1,6 @@
 const searchForm = document.getElementById("search-form");
 const searchInput = document.getElementById("search-input");
 const searchButton = document.getElementById("search-button");
-const randomButton = document.getElementById("random-button");
 const resultsGrid = document.getElementById("results-grid");
 const loader = document.getElementById("loader");
 const messageArea = document.getElementById("message-area");
@@ -28,9 +27,6 @@ const suggestionsBox = document.getElementById("suggestions-box");
     }
     searchRecipes(searchTerm);
      });
-    randomButton.addEventListener("click", () => {
-    getRandomRecipe();
-   });
      modalCloseButton.addEventListener("click", () => {
     recipeModal.classList.add("hidden");
     });
@@ -204,29 +200,27 @@ const suggestionsBox = document.getElementById("suggestions-box");
         loader.classList.add("hidden");
     }
      }
-    async function getRandomRecipe(){
+    async function loadHomeRecipes(){
     try{
         loader.classList.remove("hidden");
         resultsGrid.innerHTML = "";
-        resultsGrid.dataset.page = "search";
         messageArea.textContent = "";
-        const response = await fetch(
-            "https://www.themealdb.com/api/json/v1/1/random.php"
-        );
-        if(!response.ok){
-            throw new Error("Failed to fetch random recipe");
+        const recipes = [];
+        while(recipes.length < 6){
+            const response = await fetch(
+                "https://www.themealdb.com/api/json/v1/1/random.php"
+            );
+            const data = await response.json();
+            recipes.push(data.meals[0]);
         }
-        const data = await response.json();
-        displayRecipes(data.meals);
+        displayRecipes(recipes);
     }catch(error){
-        console.log(error);
         messageArea.textContent =
-        "⚠️Unable to get a random recipe. Please try again.";
-    }
-    finally{
+        "Unable to load recipes.";
+    }finally{
         loader.classList.add("hidden");
     }
-     }
+}
     async function getRecipeDetails(id) {
     try {
         loader.classList.remove("hidden");
@@ -347,3 +341,4 @@ const suggestionsBox = document.getElementById("suggestions-box");
         JSON.stringify(favorites)
     );
       }
+      loadHomeRecipes();
