@@ -10,266 +10,254 @@ const recipeDetailsContent = document.getElementById("recipe-details-content");
 const favoritesLink = document.getElementById("favorites-link");
 let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 const suggestionsBox = document.getElementById("suggestions-box");
-
-    let timer;
-    searchInput.addEventListener("input",()=>{
+let timer;
+searchInput.addEventListener("input", () => {
     clearTimeout(timer);
-    timer=setTimeout(()=>{
-    showSuggestions(searchInput.value.trim());
-    },300);
-    });
-    searchForm.addEventListener("submit", (event) => {
+    timer = setTimeout(() => {
+        showSuggestions(searchInput.value.trim());
+    }, 300);
+});
+searchForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const searchTerm = searchInput.value.trim();
-    if(searchTerm === ""){
+    if (searchTerm === "") {
         messageArea.textContent = "Please enter a recipe name";
         return;
     }
     searchRecipes(searchTerm);
-     });
-     modalCloseButton.addEventListener("click", () => {
+});
+modalCloseButton.addEventListener("click", () => {
     recipeModal.classList.add("hidden");
-    });
-    recipeModal.addEventListener("click", (event) => {
-    if(event.target === recipeModal){
+});
+recipeModal.addEventListener("click", (event) => {
+    if (event.target === recipeModal) {
         recipeModal.classList.add("hidden");
     }
-   });
-   document.addEventListener("click",(event)=>{
-    if(!suggestionsBox.contains(event.target)
-    && event.target!==searchInput){
-        suggestionsBox.style.display="none";
+});
+document.addEventListener("click", (event) => {
+    if (!suggestionsBox.contains(event.target)
+        && event.target !== searchInput) {
+        suggestionsBox.style.display = "none";
     }
-    });
-    async function showRecipeModal(recipe) {
-    const similarHTML = await loadSimilarRecipes(
-    recipe.strCategory,
-    recipe.idMeal
-    );
-    let ingredients = "";
-   for(let i = 1; i <= 20; i++){
-    if(recipe[`strIngredient${i}`]){
-        ingredients += `
-            <li>
-                ${recipe[`strMeasure${i}`]} 
-                ${recipe[`strIngredient${i}`]}
-            </li>
-        `;
-         }
-        }
-    recipeDetailsContent.innerHTML = `
-    <h2>${recipe.strMeal}</h2>
-    <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
-    <div class="recipe-tags">
-    <span class="tag">🍽 ${recipe.strCategory}</span>
-    <span class="tag">🌍 ${recipe.strArea}</span>
-    </div>
-    <h3>Ingredients</h3>
-    <ul class="ingredients-list">
-    ${ingredients}
-     </ul>
-     <h3>Instructions</h3>
-    <p>${recipe.strInstructions}</p>
-    <div class="recipe-links">
-    ${
-        recipe.strYoutube
-        ? `<a href="${recipe.strYoutube}" target="_blank" class="recipe-btn youtube-btn">
-            ▶ Watch on YouTube
-           </a>`
-        : ""
-    }
-    ${
-        recipe.strSource
-        ? `<a href="${recipe.strSource}" target="_blank" class="recipe-btn source-btn">
-            🌐 View Original Recipe
-           </a>`
-        : ""
-    }
-    </div>
-    ${similarHTML}
-    `;
-    recipeModal.classList.remove("hidden");
-    }
-    async function showSuggestions(query){
-    if(query.length < 2){
+});
+async function showSuggestions(query) {
+
+    if (query === "") {
         suggestionsBox.style.display = "none";
         return;
     }
-    try{
+    try {
         const response = await fetch(
             `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(query)}`
         );
         const data = await response.json();
         suggestionsBox.innerHTML = "";
-        if(!data.meals){
-            suggestionsBox.style.display = "none";
-            return;
-        }
-        data.meals.slice(0,5).forEach(recipe=>{
-            const item=document.createElement("div");
-            item.classList.add("suggestion-item");
-            item.textContent=recipe.strMeal;
-            item.addEventListener("click",()=>{
-                searchInput.value=recipe.strMeal;
-                suggestionsBox.style.display="none";
-                searchRecipes(recipe.strMeal);
+        if (data.meals) {
+            data.meals.slice(0, 5).forEach(recipe => {
+                const item = document.createElement("div");
+                item.classList.add("suggestion-item");
+                item.textContent = recipe.strMeal;
+                item.addEventListener("click", () => {
+                    searchInput.value = recipe.strMeal;
+                    suggestionsBox.style.display = "none";
+                    searchRecipes(recipe.strMeal);
+                });
+                suggestionsBox.appendChild(item);
             });
-            suggestionsBox.appendChild(item);
-        });
-        suggestionsBox.style.display="block";
-    }catch(error){
+            suggestionsBox.style.display = "block";
+        } else {
+            suggestionsBox.style.display = "none";
+        }
+    } catch (error) {
         console.log(error);
-        suggestionsBox.style.display="none";
+
+        suggestionsBox.style.display = "none";
+
     }
-     }
-    async function searchRecipes(query){
+}
+function showRecipeModal(recipe) {
+    let ingredients = [];
+    for (let i = 1; i <= 20; i++) {
+        let ingredient = recipe[`strIngredient${i}`];
+        if (ingredient && ingredient.trim() !== "") {
+            ingredients.push(ingredient);
+        }
+    }
+    recipeDetailsContent.innerHTML = `
+    <div class="recipe-layout">
+        <div class="main-recipe">
+            <h2>${recipe.strMeal}</h2>
+            <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
+            <div class="recipe-info-badges">
+                <span>🍽 Category: ${recipe.strCategory}</span>
+                <span>🌍 Area: ${recipe.strArea}</span>
+                <span>🛒 Ingredients: ${ingredients.length} items</span>
+            </div>
+            <h3>🛒 Ingredients</h3>
+            <ul class="ingredients-list">
+                ${ingredients.map(item =>
+        `<li>${item}</li>`
+    ).join("")}
+            </ul>
+            <h3>👨‍🍳 Instructions</h3>
+            <p>${recipe.strInstructions}</p>
+            ${recipe.strYoutube
+            ?
+            `<a href="${recipe.strYoutube}" target="_blank" class="youtube-btn">
+                    ▶ Watch on YouTube
+                </a>`
+            :
+            ""
+        }
+            ${recipe.strSource
+            ?
+            `<a href="${recipe.strSource}" target="_blank" class="source-btn">
+                    🌐 Original Recipe
+                </a>`
+            :
+            ""
+        }
+        </div>
+
+        <div id="similar-container">
+            <h3>🍽 Similar Recipes</h3>
+            <p class="similar-loading">Loading similar recipes...</p>
+        </div>
+
+    </div>
+    `;
+    recipeModal.classList.remove("hidden");
+    loadSimilarRecipes(recipe.strCategory, recipe.idMeal)
+        .then(similarHTML => {
+            const similarContainer = document.getElementById("similar-container");
+            if (similarContainer) {
+                similarContainer.innerHTML = similarHTML;
+                document.querySelectorAll(".similar-card")
+                    .forEach(card => {
+                        card.addEventListener("click", () => {
+                            getRecipeDetails(card.dataset.id);
+
+                        });
+
+                    });
+            }
+
+        });
+
+}
+async function searchRecipes(query){
+    suggestionsBox.style.display="none";
     try{
         loader.classList.remove("hidden");
-        resultsGrid.innerHTML = "";
-        resultsGrid.dataset.page = "search";
-        messageArea.textContent = "";
-        const lowerQuery = query.toLowerCase();
-        let searchTerms = [query];
-        const words = query.split(" ");
-        if(words.length > 1){
-            searchTerms.push(words[0]);
-            searchTerms.push(words[words.length - 1]);
-        }
-        let allRecipes = [];
-        let exactMatchFound = false;
-        for(let term of searchTerms){
-            const response = await fetch(
-                `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(term)}`
-            );
-            const data = await response.json();
-            if(data.meals){
-                allRecipes.push(...data.meals);
-            }
-        }
-        allRecipes.forEach(recipe => {
-        if(recipe.strMeal.toLowerCase()
-       .includes(lowerQuery)){
-        exactMatchFound = true;
-       }
-      });
-        allRecipes = allRecipes.filter(
-            (recipe,index,self)=>
-            index === self.findIndex(
-                r => r.idMeal === recipe.idMeal
-            )
+        resultsGrid.innerHTML="";
+        resultsGrid.dataset.page="search";
+        messageArea.textContent="";
+        const response = await fetch(
+            `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(query)}`
         );
-    allRecipes.sort((a,b)=>{
-    const aName = a.strMeal.toLowerCase();
-    const bName = b.strMeal.toLowerCase();
-    let aScore = 0;
-    let bScore = 0;
-    words.forEach(word=>{
-        if(aName.includes(word.toLowerCase())){
-            aScore++;
+        const data = await response.json();
+        if(data.meals){
+            displayRecipes(data.meals.slice(0,6));
+        }else{
+            messageArea.textContent =
+            "No recipes found. Try another recipe name.";
         }
-        if(bName.includes(word.toLowerCase())){
-            bScore++;
-        }
-    });
-    return bScore - aScore;
-   });
-   allRecipes = allRecipes.slice(0,6);
-
-    if(allRecipes.length > 0){
-    if(exactMatchFound){
-    messageArea.textContent = "";
-     }else{
-        messageArea.innerHTML =
-        `
-        <div class="search-info-message">
-       🔍 No exact recipe found for "<strong>${query}</strong>".<br>
-        Showing similar recipes you might like:
-        </div>
-        `;}
-    displayRecipes(allRecipes);
-   }else{
-    messageArea.textContent =
-    "No recipes found. Try another recipe name.";
-    }
     }catch(error){
         console.log(error);
         messageArea.textContent =
         "⚠️ Unable to load recipes. Please check your internet connection.";
+
     }
     finally{
         loader.classList.add("hidden");
+
     }
-     }
-    async function loadHomeRecipes(){
-    try{
+}
+async function loadHomeRecipes() {
+    try {
         loader.classList.remove("hidden");
         resultsGrid.innerHTML = "";
         messageArea.textContent = "";
         const recipes = [];
-        while(recipes.length < 6){
+        while (recipes.length < 6) {
             const response = await fetch(
                 "https://www.themealdb.com/api/json/v1/1/random.php"
             );
             const data = await response.json();
-            recipes.push(data.meals[0]);
+            const newRecipe = data.meals[0];
+            const exists = recipes.some(
+                recipe => recipe.idMeal === newRecipe.idMeal
+            );
+
+            if (!exists) {
+                recipes.push(newRecipe);
+            }
         }
         displayRecipes(recipes);
-    }catch(error){
-        messageArea.textContent =
-        "Unable to load recipes.";
-    }finally{
+    } catch (error) {
+        messageArea.textContent = "Unable to load recipes.";
+    } finally {
         loader.classList.add("hidden");
+
     }
 }
-    async function getRecipeDetails(id) {
+async function getRecipeDetails(id) {
     try {
         loader.classList.remove("hidden");
+
         const response = await fetch(
             `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`
         );
         const data = await response.json();
-        showRecipeModal(data.meals[0]);
+
+        if (data.meals) {
+            showRecipeModal(data.meals[0]);
+        } else {
+            messageArea.textContent = "Recipe details not found.";
+        }
     } catch (error) {
-        messageArea.textContent = "Unable to load recipe details.";
+        console.log(error);
+        messageArea.textContent =
+            "⚠️ Unable to load recipe details. Please check your internet connection.";
     } finally {
         loader.classList.add("hidden");
     }
-     }
-     async function loadSimilarRecipes(category, currentRecipeId){
-    try{
+}
+async function loadSimilarRecipes(category, currentRecipeId) {
+    try {
         const response = await fetch(
             `https://www.themealdb.com/api/json/v1/1/filter.php?c=${encodeURIComponent(category)}`
         );
         const data = await response.json();
-        if(!data.meals){
+        if (!data.meals) {
             return "";
         }
         const similarRecipes = data.meals
             .filter(recipe => recipe.idMeal !== currentRecipeId)
-            .slice(0,4);
+            .slice(0, 3);
         let html = `
             <hr>
             <h3>🍽 Similar Recipes</h3>
             <div class="similar-recipes">
         `;
-        similarRecipes.forEach(recipe=>{
+        similarRecipes.forEach(recipe => {
             html += `
-                <div class="similar-card"
-                     onclick="getRecipeDetails('${recipe.idMeal}')">
-                    <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
+                <div class="similar-card" data-id="${recipe.idMeal}">
+                    <img src="${recipe.strMealThumb}" 
+                    alt="${recipe.strMeal}">
                     <p>${recipe.strMeal}</p>
                 </div>
             `;
         });
         html += `</div>`;
         return html;
-    }catch(error){
+    } catch (error) {
         console.log(error);
         return "";
     }
-     }
-    function displayRecipes(recipes){
-    if(!recipes){
+}
+function displayRecipes(recipes) {
+    if (!recipes) {
         messageArea.textContent = "No recipes found";
         return;
     }
@@ -280,56 +268,73 @@ const suggestionsBox = document.getElementById("suggestions-box");
         const isFavorite = favorites.some(
             fav => fav.idMeal === recipe.idMeal
         );
+        let ingredientCount = 0;
+        for (let i = 1; i <= 20; i++) {
+            if (
+                recipe[`strIngredient${i}`] &&
+                recipe[`strIngredient${i}`].trim() !== ""
+            ) {
+                ingredientCount++;
+            }
+        }
         card.innerHTML = `
-            <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
-            <h3>${recipe.strMeal}</h3>
-            <button class="favorite-btn" title="${isFavorite ? "Remove from Favorites" : "Add to Favorites"}">
-            ${isFavorite ? "♥" : "♡"}
-            </button>
-        `;
+<img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
+<h3>${recipe.strMeal}</h3>
+<div class="recipe-card-info">
+<span>🍽 ${recipe.strCategory}</span>
+<span>🌍 ${recipe.strArea}</span>
+<span>🛒 ${ingredientCount} items</span>
+</div>
+<div class="view-hint">
+    Click to view details
+</div>
+<button class="favorite-btn">
+${isFavorite ? "♥" : "♡"}
+</button>
+`;
         const favoriteButton = card.querySelector(".favorite-btn");
-        favoriteButton.addEventListener("click",(event)=>{
-        event.stopPropagation();
-        toggleFavorite(recipe);
-        if(resultsGrid.dataset.page === "favorites"){
-        displayRecipes(favorites);
-         }
-        else{
-        const updatedFavorite = favorites.some(
-            fav => fav.idMeal === recipe.idMeal
-        );
-        favoriteButton.textContent =
-        updatedFavorite ? "♥" : "♡";
-        favoriteButton.title =
-        updatedFavorite 
-        ? "Remove from Favorites"
-        : "Add to Favorites";
-         }
-       });
-        card.dataset.id = recipe.idMeal;
-        card.addEventListener("click",()=>{
+        card.addEventListener("click", () => {
             getRecipeDetails(recipe.idMeal);
         });
+        favoriteButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            toggleFavorite(recipe);
+            if (resultsGrid.dataset.page === "favorites") {
+                displayRecipes(favorites);
+            }
+            else {
+                const updatedFavorite = favorites.some(
+                    fav => fav.idMeal === recipe.idMeal
+                );
+                favoriteButton.textContent =
+                    updatedFavorite ? "♥" : "♡";
+                favoriteButton.title =
+                    updatedFavorite
+                        ? "Remove from Favorites"
+                        : "Add to Favorites";
+            }
+        });
+        card.dataset.id = recipe.idMeal;
         resultsGrid.appendChild(card);
     });
-     }   
-    favoritesLink.addEventListener("click",(event)=>{
+}
+favoritesLink.addEventListener("click", (event) => {
     event.preventDefault();
     resultsGrid.dataset.page = "favorites";
-    if(favorites.length === 0){
+    if (favorites.length === 0) {
         resultsGrid.innerHTML = "";
         messageArea.textContent =
-        "No favorite recipes yet ❤️";
+            "No favorite recipes yet ❤️";
         return;
     }
     messageArea.textContent = "";
     displayRecipes(favorites);
-     });
-    function toggleFavorite(recipe){
+});
+function toggleFavorite(recipe) {
     const exists = favorites.find(
         fav => fav.idMeal === recipe.idMeal
-       );
-        if(exists){
+    );
+    if (exists) {
         favorites = favorites.filter(
             fav => fav.idMeal !== recipe.idMeal
         );
@@ -340,5 +345,5 @@ const suggestionsBox = document.getElementById("suggestions-box");
         "favorites",
         JSON.stringify(favorites)
     );
-      }
-      loadHomeRecipes();
+}
+loadHomeRecipes();
