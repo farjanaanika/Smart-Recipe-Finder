@@ -564,8 +564,8 @@ h1{
     border-left:1px solid #ddd;
     padding-left:20px;
 }
-@media(max-width:768px){
 
+@media(max-width:768px){
 .recipe-layout{
     grid-template-columns:1fr;
 }
@@ -589,4 +589,154 @@ h1{
 }
 .ingredients-list li{
     margin-bottom:4px;
+}
+.theme-toggle{
+    background:none;
+    border:none;
+    font-size:1.4rem;
+    cursor:pointer;
+    transition:0.3s;
+}
+.theme-toggle:hover{
+    transform:scale(1.2);
+}
+.recipe-categories{
+    margin:35px auto;
+    text-align:center;
+}
+.recipe-categories h2{
+    font-size:1.7rem;
+    margin-bottom:20px;
+    color:#343a40;
+}
+.category-list{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:15px;
+}
+.category-btn{
+    padding:12px 22px;
+    border:none;
+    border-radius:30px;
+    background:white;
+    color:#343a40;
+    font-family:"Poppins",sans-serif;
+    font-size:0.95rem;
+    font-weight:600;
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    transition:.3s;
+}
+.category-btn:hover{
+    background:#4caf50;
+    color:white;
+    transform:translateY(-4px);
+}
+body.dark-mode{
+    background:#121212;
+    color:white;
+}
+body.dark-mode .navbar,
+body.dark-mode .recipe-card,
+body.dark-mode .modal-content,
+body.dark-mode .footer{
+    background:#1f1f1f;
+    color:white;
+}
+body.dark-mode .logo{
+    color:#4caf50;
+}
+body.dark-mode .nav-links a{
+    color:#ddd;
+}
+body.dark-mode .nav-links a:hover{
+    color:#4caf50;
+}
+body.dark-mode .hero p{
+    color:#ddd;
+}
+body.dark-mode .section-title{
+    color:white;
+}
+body.dark-mode .recipe-card h3{
+    color:white;
+}
+body.dark-mode .recipe-card-info span{
+    background:#333;
+    color:white;
+}
+body.dark-mode .view-hint{
+    color:#aaa;
+}
+body.dark-mode #search-input{
+    background:#242424;
+    color:white;
+    border:1px solid #555;
+}
+body.dark-mode #search-input::placeholder{
+    color:#aaa;
+}
+body.dark-mode .suggestions-box{
+    background:#2c2c2c;
+    color:white;
+}
+body.dark-mode .suggestion-item{
+    color:white;
+    border-color:#444;
+}
+body.dark-mode .suggestion-item:hover{
+    background:#444;
+}
+body.dark-mode .modal-close-button{
+    color:white;
+}
+body.dark-mode .recipe-info-badges span{
+    background:#333;
+    color:white;
+}
+body.dark-mode #recipe-details-content li{
+    background:#333;
+    color:white;
+}
+body.dark-mode .footer{
+    background:rgba(25,25,25,0.92);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    border-top:3px solid #66bb6a;
+    border-left:1px solid rgba(102,187,106,.25);
+    border-right:1px solid rgba(102,187,106,.25);
+
+    box-shadow:0 -8px 20px rgba(0,0,0,.45);
+}
+body.dark-mode .footer h2{
+    color:#ffffff;
+}
+body.dark-mode .social-icons a{
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.12);
+    color:#81c784;
+}
+body.dark-mode .social-icons a:hover{
+    background:#4caf50;
+    color:#ffffff;
+    border-color:#4caf50;
+    transform:translateY(-4px);
+}
+body.dark-mode .footer p,
+body.dark-mode .copyright{
+    color:#d6d6d6;
+}
+body.dark-mode .footer hr{
+    background:rgba(255,255,255,.15);
+}
+body.dark-mode .recipe-categories h2{
+    color:white;
+}
+body.dark-mode .category-btn{
+    background:#2c2c2c;
+    color:white;
+}
+body.dark-mode .category-btn:hover{
+    background:#4caf50;
 }

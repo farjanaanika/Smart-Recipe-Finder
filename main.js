@@ -10,6 +10,7 @@ const recipeDetailsContent = document.getElementById("recipe-details-content");
 const favoritesLink = document.getElementById("favorites-link");
 let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 const suggestionsBox = document.getElementById("suggestions-box");
+const categoryButtons = document.querySelectorAll(".category-btn");
 let timer;
 searchInput.addEventListener("input", () => {
     clearTimeout(timer);
@@ -40,8 +41,30 @@ document.addEventListener("click", (event) => {
         suggestionsBox.style.display = "none";
     }
 });
-async function showSuggestions(query) {
+async function searchByCategory(category){
+    try{
+        loader.classList.remove("hidden");
+        resultsGrid.innerHTML="";
+        messageArea.textContent="";
+        const response = await fetch(
+            `https://www.themealdb.com/api/json/v1/1/filter.php?c=${encodeURIComponent(category)}`
+        );
+        const data = await response.json();
 
+        if(data.meals){
+            displayRecipes(data.meals.slice(0,6));
+        }else{
+            messageArea.textContent="No recipes found.";
+        }
+
+    }catch(error){
+        console.log(error);
+        messageArea.textContent="Unable to load recipes.";
+    }finally{
+        loader.classList.add("hidden");
+    }
+}
+async function showSuggestions(query) {
     if (query === "") {
         suggestionsBox.style.display = "none";
         return;
@@ -118,33 +141,28 @@ function showRecipeModal(recipe) {
             ""
         }
         </div>
-
         <div id="similar-container">
             <h3>🍽 Similar Recipes</h3>
             <p class="similar-loading">Loading similar recipes...</p>
         </div>
-
     </div>
     `;
     recipeModal.classList.remove("hidden");
     loadSimilarRecipes(recipe.strCategory, recipe.idMeal)
-        .then(similarHTML => {
-            const similarContainer = document.getElementById("similar-container");
-            if (similarContainer) {
-                similarContainer.innerHTML = similarHTML;
-                document.querySelectorAll(".similar-card")
-                    .forEach(card => {
-                        card.addEventListener("click", () => {
-                            getRecipeDetails(card.dataset.id);
+    .then(similarHTML => {
+    const similarContainer = document.getElementById("similar-container");
+          if (similarContainer) {
+            similarContainer.innerHTML = similarHTML;
+            document.querySelectorAll(".similar-card")
+            .forEach(card => {
+            card.addEventListener("click", () => {
+            getRecipeDetails(card.dataset.id);
 
-                        });
-
-                    });
+            });
+            });
             }
-
         });
-
-}
+    }
 async function searchRecipes(query){
     suggestionsBox.style.display="none";
     try{
@@ -318,6 +336,14 @@ ${isFavorite ? "♥" : "♡"}
         resultsGrid.appendChild(card);
     });
 }
+categoryButtons.forEach(button=>{
+    button.addEventListener("click",()=>{
+        const category = button.dataset.category;
+        searchInput.value = category;
+        searchByCategory(category);
+    });
+
+});
 favoritesLink.addEventListener("click", (event) => {
     event.preventDefault();
     resultsGrid.dataset.page = "favorites";
@@ -329,6 +355,22 @@ favoritesLink.addEventListener("click", (event) => {
     }
     messageArea.textContent = "";
     displayRecipes(favorites);
+});
+const themeToggle = document.getElementById("theme-toggle");
+
+if(localStorage.getItem("theme") === "dark"){
+    document.body.classList.add("dark-mode");
+    themeToggle.textContent = "☀️";
+}
+themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    if(document.body.classList.contains("dark-mode")){
+        themeToggle.textContent = "☀️";
+        localStorage.setItem("theme","dark");
+    }else{
+        themeToggle.textContent = "🌙";
+        localStorage.setItem("theme","light");
+    }
 });
 function toggleFavorite(recipe) {
     const exists = favorites.find(
