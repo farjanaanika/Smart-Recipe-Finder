@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About - Smart Recipe Finder</title>
+<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+<div class="recipe-finder-container">
+<nav class="navbar">
+<div class="logo">🍽 Smart Recipe Finder</div>
+<ul class="nav-links">
+<li><a href="index.html">Home</a></li>
+<li><a href="index.html?favorites=true">❤️ Favorites</a></li>
+<li><a href="about.html" class="active">About</a></li>
+</ul>
+<button id="theme-toggle" class="theme-toggle">🌙</button>
+</nav>
+<section class="about-section">
+<h1>🍽 About Smart Recipe Finder</h1>
+<p class="about-description">Smart Recipe Finder is a modern recipe discovery application designed to help users explore delicious meals from around the world. Users can search for recipes, view detailed ingredients, follow cooking instructions, discover similar recipes, and save their favorite meals for later.</p>
+<div class="about-features">
+<div class="about-feature-card">
+<h3>🔍 Smart Search</h3>
+<p>Search recipes quickly by meal name and find dishes that match your taste.</p>
+</div>
+<div class="about-feature-card">
+<h3>🍴 Recipe Details</h3>
+<p>View complete ingredients, cooking instructions, category, and origin information for every recipe.</p>
+</div>
+<div class="about-feature-card">
+<h3>❤️ Favorites</h3>
+<p>Save your favorite recipes and access them anytime easily.</p>
+</div>
+</div>
+</section>
+</div>
+<footer class="footer">
+<div class="footer-content">
+<h2>🍽 Smart Recipe Finder</h2>
+<p>Discover delicious recipes from around the world. Search, save favorites, and enjoy cooking!</p>
+<div class="social-icons">
+<a href="#"><i class="fab fa-facebook-f"></i></a>
+<a href="#"><i class="fab fa-instagram"></i></a>
+<a href="#"><i class="fab fa-x-twitter"></i></a>
+<a href="#"><i class="fab fa-youtube"></i></a>
+<a href="#"><i class="fab fa-github"></i></a>
+</div>
+<hr>
+<p class="copyright">© 2026 Smart Recipe Finder | Made with ❤️ using TheMealDB API</p>
+</div>
+</footer>
+<script>
+const themeToggle=document.getElementById("theme-toggle");
+if(localStorage.getItem("theme")==="dark"){
+document.body.classList.add("dark-mode");
+themeToggle.textContent="☀️";
+}
+themeToggle.addEventListener("click",()=>{
+document.body.classList.toggle("dark-mode");
+if(document.body.classList.contains("dark-mode")){
+themeToggle.textContent="☀️";
+localStorage.setItem("theme","dark");
+}else{
+themeToggle.textContent="🌙";
+localStorage.setItem("theme","light");
+}
+});
+</script>
+</body>
+</html>

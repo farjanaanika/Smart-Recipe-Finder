@@ -8,9 +8,11 @@ const recipeModal = document.getElementById("recipe-modal");
 const modalCloseButton = document.getElementById("modal-close-button");
 const recipeDetailsContent = document.getElementById("recipe-details-content");
 const favoritesLink = document.getElementById("favorites-link");
+const homeLink = document.getElementById("home-link");
 let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 const suggestionsBox = document.getElementById("suggestions-box");
 const categoryButtons = document.querySelectorAll(".category-btn");
+const sectionTitle = document.getElementById("section-title");
 let timer;
 searchInput.addEventListener("input", () => {
     clearTimeout(timer);
@@ -165,6 +167,7 @@ function showRecipeModal(recipe) {
     }
 async function searchRecipes(query){
     suggestionsBox.style.display="none";
+    sectionTitle.textContent = "🍽 Search Results";
     try{
         loader.classList.remove("hidden");
         resultsGrid.innerHTML="";
@@ -192,6 +195,10 @@ async function searchRecipes(query){
     }
 }
 async function loadHomeRecipes() {
+    homeLink.classList.add("active");
+    favoritesLink.classList.remove("active");
+    sectionTitle.classList.remove("favorite-title");
+    sectionTitle.textContent = "🍽 Discover Recipes";
     try {
         loader.classList.remove("hidden");
         resultsGrid.innerHTML = "";
@@ -206,7 +213,6 @@ async function loadHomeRecipes() {
             const exists = recipes.some(
                 recipe => recipe.idMeal === newRecipe.idMeal
             );
-
             if (!exists) {
                 recipes.push(newRecipe);
             }
@@ -216,13 +222,11 @@ async function loadHomeRecipes() {
         messageArea.textContent = "Unable to load recipes.";
     } finally {
         loader.classList.add("hidden");
-
     }
 }
 async function getRecipeDetails(id) {
     try {
         loader.classList.remove("hidden");
-
         const response = await fetch(
             `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`
         );
@@ -344,16 +348,23 @@ categoryButtons.forEach(button=>{
     });
 
 });
-favoritesLink.addEventListener("click", (event) => {
+homeLink.addEventListener("click",(event)=>{
     event.preventDefault();
-    resultsGrid.dataset.page = "favorites";
-    if (favorites.length === 0) {
-        resultsGrid.innerHTML = "";
-        messageArea.textContent =
-            "No favorite recipes yet ❤️";
+    loadHomeRecipes();
+});
+favoritesLink.addEventListener("click",(event)=>{
+    event.preventDefault();
+    homeLink.classList.remove("active");
+    favoritesLink.classList.add("active");
+    sectionTitle.classList.add("favorite-title");
+    resultsGrid.dataset.page="favorites";
+    sectionTitle.textContent="Your Favorite Recipes";
+    if(favorites.length===0){
+        resultsGrid.innerHTML="";
+        messageArea.textContent="No favorite recipes yet❤️";
         return;
     }
-    messageArea.textContent = "";
+    messageArea.textContent="";
     displayRecipes(favorites);
 });
 const themeToggle = document.getElementById("theme-toggle");
@@ -388,4 +399,34 @@ function toggleFavorite(recipe) {
         JSON.stringify(favorites)
     );
 }
-loadHomeRecipes();
+function toggleFavorite(recipe) {
+    const exists = favorites.find(
+        fav => fav.idMeal === recipe.idMeal
+    );
+    if (exists) {
+        favorites = favorites.filter(
+            fav => fav.idMeal !== recipe.idMeal
+        );
+    } else {
+        favorites.push(recipe);
+    }
+    localStorage.setItem(
+        "favorites",
+        JSON.stringify(favorites)
+    );
+}
+if(window.location.search === "?favorites=true"){
+    homeLink.classList.remove("active");
+    favoritesLink.classList.add("active");
+    sectionTitle.classList.add("favorite-title");
+    sectionTitle.textContent="Your Favorite Recipes";
+    resultsGrid.innerHTML="";
+    messageArea.textContent="";
+    if(favorites.length===0){
+        messageArea.textContent="No favorite recipes yet ❤️";
+    }else{
+        displayRecipes(favorites);
+    }
+}else{
+    loadHomeRecipes();
+}

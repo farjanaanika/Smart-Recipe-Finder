@@ -16,19 +16,19 @@
     <nav class="navbar">
     <div class="logo">🍽 Smart Recipe Finder</div>
     <ul class="nav-links">
-    <li><a href="#">Home</a></li>
+    <li><a href="#" id="home-link" class="active">Home</a></li>
     <li><a href="#" id="favorites-link">❤️ Favorites</a></li>
-    </ul>
-    <button id="theme-toggle" class="theme-toggle">
+    <li><a href="about.html">About</a></li>
+</ul>
+<button id="theme-toggle" class="theme-toggle">
     🌙
-    </button>
-       </nav>
+</button>
+</nav>     
     <section class="hero">
     <h1>Find Your Perfect Recipe</h1>
-   <p>
-   Explore delicious recipes from around the world and discover your next favorite meal.
-   </p>
-    </section> 
+    <p>Explore delicious recipes from around the world and discover your next favorite meal.</p>
+    </section>
+    <form id="search-form" class="search-box">
     <form id="search-form" class="search-box">
     <input
     type="text"
@@ -43,7 +43,7 @@
     <div id="suggestions-box" class="suggestions-box"></div>
     </form>
     <section class="recipe-categories">
-    <h2>🍽 Browse by Category</h2>
+    <h2 class="category-title">🍽 Browse by Category</h2>
     <div class="category-list">
         <button class="category-btn" data-category="Chicken">🍗 Chicken</button>
         <button class="category-btn" data-category="Beef">🥩 Beef</button>
@@ -54,7 +54,7 @@
         </div>
        </section>
     <div class="message" id="message-area"></div>
-    <h2 class="section-title">
+    <h2 class="section-title" id="section-title">
     🍽 Discover Recipes
     </h2>
     <div id="loader" class="loader hidden">
@@ -68,10 +68,10 @@
         <div class="modal-content">
          <button id="modal-close-button" class="modal-close-button">&times;</button>
          <div id="recipe-details-content">
-            <!-- Details will be loaded here -->
           </div>
           </div>
           </div>
+</section>
     <footer class="footer">
     <div class="footer-content">
         <h2>🍽 Smart Recipe Finder</h2>
