@@ -1,5 +1,6 @@
 const searchForm = document.getElementById("search-form");
 const searchInput = document.getElementById("search-input");
+const searchType = document.getElementById("search-type");
 const searchButton = document.getElementById("search-button");
 const resultsGrid = document.getElementById("results-grid");
 const loader = document.getElementById("loader");
@@ -24,10 +25,19 @@ searchForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const searchTerm = searchInput.value.trim();
     if (searchTerm === "") {
-        messageArea.textContent = "Please enter a recipe name";
+        messageArea.textContent = "Please enter a search term";
         return;
     }
-    searchRecipes(searchTerm);
+    if (searchType.value === "name" && searchTerm.includes(",")) {
+        messageArea.textContent =
+            'Please select "By Ingredients" to search multiple ingredients.';
+        return;
+    }
+    if (searchType.value === "ingredient") {
+        searchByIngredient(searchTerm);
+    } else {
+        searchRecipes(searchTerm);
+    }
 });
 modalCloseButton.addEventListener("click", () => {
     recipeModal.classList.add("hidden");
@@ -43,6 +53,62 @@ document.addEventListener("click", (event) => {
         suggestionsBox.style.display = "none";
     }
 });
+async function searchByIngredient(ingredient) {
+    suggestionsBox.style.display = "none";
+    sectionTitle.textContent = "🥕 Ingredient Search Results";
+    const ingredients = ingredient
+        .split(",")
+        .map(item => item.trim().toLowerCase())
+        .filter(item => item !== "");
+    if (ingredients.length === 0) {
+        messageArea.textContent = "Please enter at least one ingredient.";
+        return;
+    }
+    try {
+        loader.classList.remove("hidden");
+        resultsGrid.innerHTML = "";
+        messageArea.textContent = "";
+        let ingredientResults = [];
+        for (const item of ingredients) {
+            const response = await fetch(
+                `https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(item)}`
+            );
+            const data = await response.json();
+            if (data.meals) {
+                ingredientResults.push(data.meals);
+            }
+        }
+        if (ingredientResults.length === 0) {
+            messageArea.textContent =
+                "No recipes found with these ingredients.";
+            return;
+        }
+        let matchingRecipes;
+        if (ingredientResults.length === 1) {
+            matchingRecipes = ingredientResults[0];
+
+        } else{
+            matchingRecipes = ingredientResults[0].filter(recipe =>
+                ingredientResults.every(list =>
+                    list.some(item => item.idMeal === recipe.idMeal)
+                )
+            );
+        }
+        if (matchingRecipes.length > 0) {
+            displayRecipes(matchingRecipes.slice(0, 6));
+        } else {
+            messageArea.textContent =
+                "No recipes found containing all these ingredients.";
+        }
+    } catch (error) {
+        console.log(error);
+
+        messageArea.textContent =
+            "⚠️ Unable to load recipes. Please check your internet connection.";
+    } finally {
+        loader.classList.add("hidden");
+    }
+}
 async function searchByCategory(category){
     try{
         loader.classList.remove("hidden");
@@ -165,33 +231,62 @@ function showRecipeModal(recipe) {
             }
         });
     }
-async function searchRecipes(query){
-    suggestionsBox.style.display="none";
+async function searchRecipes(query) {
+    suggestionsBox.style.display = "none";
     sectionTitle.textContent = "🍽 Search Results";
-    try{
+    const ingredients = query
+        .split(",")
+        .map(item => item.trim())
+        .filter(item => item !== "");
+    try {
         loader.classList.remove("hidden");
-        resultsGrid.innerHTML="";
-        resultsGrid.dataset.page="search";
-        messageArea.textContent="";
-        const response = await fetch(
-            `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(query)}`
-        );
-        const data = await response.json();
-        if(data.meals){
-            displayRecipes(data.meals.slice(0,6));
-        }else{
-            messageArea.textContent =
-            "No recipes found. Try another recipe name.";
+        resultsGrid.innerHTML = "";
+        resultsGrid.dataset.page = "search";
+        messageArea.textContent = "";
+        if (ingredients.length === 1) {
+            const response = await fetch(
+                `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(ingredients[0])}`
+            );
+            const data = await response.json();
+            if (data.meals) {
+                displayRecipes(data.meals.slice(0, 6));
+            } else {
+                messageArea.textContent =
+                    "No recipes found. Try another recipe name or ingredient.";
+            }
+            return;
         }
-    }catch(error){
+        let allRecipes = [];
+        for (const ingredient of ingredients) {
+            const response = await fetch(
+                `https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(ingredient)}`
+            );
+            const data = await response.json();
+            if (data.meals) {
+                allRecipes.push(...data.meals);
+            }
+        }
+        const uniqueRecipes = allRecipes.filter(
+            (recipe, index, self) =>
+                index === self.findIndex(
+                    item => item.idMeal === recipe.idMeal
+                )
+        );
+
+        if (uniqueRecipes.length > 0) {
+            displayRecipes(uniqueRecipes.slice(0, 6));
+        } else {
+            messageArea.textContent =
+                "No recipes found with these ingredients.";
+        }
+
+    } catch (error) {
         console.log(error);
+
         messageArea.textContent =
-        "⚠️ Unable to load recipes. Please check your internet connection.";
-
-    }
-    finally{
+            "⚠️ Unable to load recipes. Please check your internet connection.";
+    } finally {
         loader.classList.add("hidden");
-
     }
 }
 async function loadHomeRecipes() {

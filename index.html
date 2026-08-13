@@ -29,16 +29,19 @@
     <p>Explore delicious recipes from around the world and discover your next favorite meal.</p>
     </section>
     <form id="search-form" class="search-box">
-    <form id="search-form" class="search-box">
+    <select id="search-type">
+    <option value="name">By Recipe Name</option>
+    <option value="ingredient">By Ingredients</option>
+    </select>
     <input
-    type="text"
-    id="search-input"
-    placeholder="search recipe by name (eg. chicken)"
-    autocomplete="off"
-    required
+        type="text"
+        id="search-input"
+        placeholder="Search recipe by name (eg. chicken)"
+        autocomplete="off"
+        required
     />
     <button type="submit" id="search-button">
-        Search
+    Search
     </button>
     <div id="suggestions-box" class="suggestions-box"></div>
     </form>

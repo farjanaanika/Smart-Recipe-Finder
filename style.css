@@ -9,7 +9,6 @@
     padding: 0;
     box-sizing: border-box;
 }
-
 body{
     font-family: "Poppins", sans-serif;
     line-height: 1.7;
@@ -41,16 +40,38 @@ h1{
     border-radius: 8px;
     position: relative; 
 }
+#search-type{
+    padding: 14px 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: "Poppins", sans-serif;
+    background: white;
+    color: #343a40;
+    border: 1px solid #e9ecef;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    outline: none;
+    cursor: pointer;
+    height: 50px;
+}
+#search-type:focus{
+    border-color: var(--primary-color);
+}
+#search-input{
+    border-radius: 0;
+}
+#search-button{
+    border-radius: 0 8px 8px 0;
+}
 #search-input {
     padding: 15px 20px;
     font-size: 1rem;
     flex-grow: 1;
     border: 1px solid #e9ecef;
-    border-radius: 8px 0 0 8px;
+    border-radius: 0;
     outline: none;
     transition: border-color 0.3s ease;
 }
-
 #search-input:focus{
     border-color:var(--primary-color);
     box-shadow:0 0 8px rgba(76,175,80,0.3);
@@ -99,26 +120,22 @@ h1{
     margin-bottom:35px;
     box-shadow:0 4px 10px rgba(0,0,0,0.08);
 }
-
 .logo{
     font-size:1.4rem;
     font-weight:700;
     color:var(--primary-color);
 }
-
 .nav-links{
     display:flex;
     list-style:none;
     gap:25px;
 }
-
 .nav-links a{
     text-decoration:none;
     color:var(--text-dark);
     font-weight:600;
     transition:0.3s;
 }
-
 .nav-links a:hover{
     color:var(--primary-color);
 }
@@ -126,12 +143,10 @@ h1{
     text-align:center;
     margin-bottom:35px;
 }
-
 .hero h2{
     font-size:2rem;
     margin-bottom:10px;
 }
-
 .hero p{
     color:#666;
     font-size:1.1rem;
@@ -182,6 +197,16 @@ h1{
     }
     .hero h2{
         font-size:1.6rem;
+    }
+    .search-box{
+        flex-wrap: nowrap;
+    }
+    #search-type{
+        font-size:0.8rem;
+        padding:12px 8px;
+    }
+    #search-input{
+        min-width:0;
     }
 }
 .hero h1{
@@ -782,6 +807,15 @@ body.dark-mode #search-input{
     background:#242424;
     color:white;
     border:1px solid #555;
+}
+body.dark-mode #search-type{
+    background:#242424;
+    color:white;
+    border:1px solid #555;
+    border-right:none;
+}
+body.dark-mode #search-type:focus{
+    border-color:#4caf50;
 }
 body.dark-mode #search-input::placeholder{
     color:#aaa;
