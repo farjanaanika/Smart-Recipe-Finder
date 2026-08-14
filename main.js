@@ -1,5 +1,7 @@
 const searchForm = document.getElementById("search-form");
 const searchInput = document.getElementById("search-input");
+let authToken = localStorage.getItem("authToken");
+let loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 const searchType = document.getElementById("search-type");
 const searchButton = document.getElementById("search-button");
 const resultsGrid = document.getElementById("results-grid");
@@ -10,7 +12,7 @@ const modalCloseButton = document.getElementById("modal-close-button");
 const recipeDetailsContent = document.getElementById("recipe-details-content");
 const favoritesLink = document.getElementById("favorites-link");
 const homeLink = document.getElementById("home-link");
-let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+let favorites = [];
 const suggestionsBox = document.getElementById("suggestions-box");
 const categoryButtons = document.querySelectorAll(".category-btn");
 const sectionTitle = document.getElementById("section-title");
@@ -294,6 +296,7 @@ async function loadHomeRecipes() {
     favoritesLink.classList.remove("active");
     sectionTitle.classList.remove("favorite-title");
     sectionTitle.textContent = "🍽 Discover Recipes";
+    resultsGrid.dataset.page = "home";
     try {
         loader.classList.remove("hidden");
         resultsGrid.innerHTML = "";
@@ -405,7 +408,7 @@ function displayRecipes(recipes) {
 <div class="view-hint">
     Click to view details
 </div>
-<button class="favorite-btn">
+<button type="button" class="favorite-btn">
 ${isFavorite ? "♥" : "♡"}
 </button>
 `;
@@ -413,9 +416,10 @@ ${isFavorite ? "♥" : "♡"}
         card.addEventListener("click", () => {
             getRecipeDetails(recipe.idMeal);
         });
-        favoriteButton.addEventListener("click", (event) => {
-            event.stopPropagation();
-            toggleFavorite(recipe);
+        favoriteButton.addEventListener("click", async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        await toggleFavorite(recipe);
             if (resultsGrid.dataset.page === "favorites") {
                 displayRecipes(favorites);
             }
@@ -447,23 +451,25 @@ homeLink.addEventListener("click",(event)=>{
     event.preventDefault();
     loadHomeRecipes();
 });
-favoritesLink.addEventListener("click",(event)=>{
+favoritesLink.addEventListener("click", async (event) => {
     event.preventDefault();
+    await loadFavoritesFromBackend();
     homeLink.classList.remove("active");
     favoritesLink.classList.add("active");
     sectionTitle.classList.add("favorite-title");
-    resultsGrid.dataset.page="favorites";
-    sectionTitle.textContent="Your Favorite Recipes";
-    if(favorites.length===0){
-        resultsGrid.innerHTML="";
-        messageArea.textContent="No favorite recipes yet❤️";
+    sectionTitle.textContent = "Your Favorite Recipes";
+    resultsGrid.dataset.page = "favorites";
+    resultsGrid.innerHTML = "";
+    messageArea.textContent = "";
+    if (favorites.length === 0) {
+        sectionTitle.textContent = "";
+        messageArea.textContent = "No favorite recipes yet ❤️";
         return;
     }
-    messageArea.textContent="";
+
     displayRecipes(favorites);
 });
 const themeToggle = document.getElementById("theme-toggle");
-
 if(localStorage.getItem("theme") === "dark"){
     document.body.classList.add("dark-mode");
     themeToggle.textContent = "☀️";
@@ -478,50 +484,247 @@ themeToggle.addEventListener("click", () => {
         localStorage.setItem("theme","light");
     }
 });
-function toggleFavorite(recipe) {
-    const exists = favorites.find(
-        fav => fav.idMeal === recipe.idMeal
-    );
-    if (exists) {
-        favorites = favorites.filter(
-            fav => fav.idMeal !== recipe.idMeal
+async function toggleFavorite(recipe) {
+    try {
+        if (!authToken) {
+            messageArea.textContent = "Please login first.";
+            return;
+        }
+        const exists = favorites.some(
+            fav => fav.idMeal === recipe.idMeal
         );
-    } else {
-        favorites.push(recipe);
+        if (exists) {
+            const response = await fetch(
+                `http://localhost:5000/api/favorites/${recipe.idMeal}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${authToken}`
+                    }
+                }
+            );
+            if (!response.ok) {
+                throw new Error("Failed to remove favorite");
+            }
+            favorites = favorites.filter(
+                fav => fav.idMeal !== recipe.idMeal
+            );
+
+        } else {
+            const response = await fetch(
+                "http://localhost:5000/api/favorites",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(recipe)
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to save favorite");
+            }
+            const savedFavorite = await response.json();
+            favorites.push(savedFavorite);
+        }
+    } catch (error) {
+        console.log("Favorite error:", error);
+        messageArea.textContent =
+            "⚠️ Unable to update favorite. Please try again.";
     }
-    localStorage.setItem(
-        "favorites",
-        JSON.stringify(favorites)
-    );
 }
-function toggleFavorite(recipe) {
-    const exists = favorites.find(
-        fav => fav.idMeal === recipe.idMeal
-    );
-    if (exists) {
-        favorites = favorites.filter(
-            fav => fav.idMeal !== recipe.idMeal
+async function loadFavoritesFromBackend() {
+    try {
+        if (!authToken) {
+            favorites = [];
+            console.log("User is not logged in.");
+            return;
+        }
+        const response = await fetch(
+            "http://localhost:5000/api/favorites",
+            {
+                headers: {
+                    "Authorization": `Bearer ${authToken}`
+                }
+            }
         );
-    } else {
-        favorites.push(recipe);
+        if (!response.ok) {
+            throw new Error("Failed to load favorites");
+        }
+        favorites = await response.json();
+        console.log(
+            "Favorites loaded from MongoDB:",
+            favorites
+        );
+    } catch (error) {
+        console.log("Error loading favorites:", error);
     }
-    localStorage.setItem(
-        "favorites",
-        JSON.stringify(favorites)
-    );
 }
 if(window.location.search === "?favorites=true"){
-    homeLink.classList.remove("active");
-    favoritesLink.classList.add("active");
-    sectionTitle.classList.add("favorite-title");
-    sectionTitle.textContent="Your Favorite Recipes";
-    resultsGrid.innerHTML="";
-    messageArea.textContent="";
-    if(favorites.length===0){
-        messageArea.textContent="No favorite recipes yet ❤️";
-    }else{
+    loadFavoritesFromBackend().then(() => {
+
+        homeLink.classList.remove("active");
+        favoritesLink.classList.add("active");
+        sectionTitle.classList.add("favorite-title");
+        sectionTitle.textContent="Your Favorite Recipes";
+        resultsGrid.innerHTML="";
+        messageArea.textContent="";
+        if(favorites.length===0){
+            messageArea.textContent="No favorite recipes yet ❤️";
+            return;
+        }
         displayRecipes(favorites);
-    }
+    });
 }else{
     loadHomeRecipes();
 }
+const loginBtn = document.getElementById("login-btn");
+const registerBtn = document.getElementById("register-btn");
+const logoutBtn = document.getElementById("logout-btn");
+const userWelcome = document.getElementById("user-welcome");
+if (authToken) {
+    loginBtn.classList.add("hidden");
+    registerBtn.classList.add("hidden");
+    logoutBtn.classList.remove("hidden");
+    if (loggedInUser) {
+        userWelcome.textContent = `✨ Welcome ${loggedInUser.username} 👋`;      
+        userWelcome.classList.remove("hidden");
+    }
+} else {
+    loginBtn.classList.remove("hidden");
+    registerBtn.classList.remove("hidden");
+    logoutBtn.classList.add("hidden");
+    userWelcome.classList.add("hidden");
+}
+const authSection = document.getElementById("auth-section");
+const authCloseButton = document.getElementById("auth-close-button");
+const loginFormContainer = document.getElementById("login-form-container");
+const registerFormContainer = document.getElementById("register-form-container");
+
+const loginForm = document.getElementById("login-form");
+const registerForm = document.getElementById("register-form");
+
+const loginMessage = document.getElementById("login-message");
+const registerMessage = document.getElementById("register-message");
+loginBtn.addEventListener("click", () => {
+    authSection.classList.remove("hidden");
+    loginFormContainer.classList.remove("hidden");
+    registerFormContainer.classList.add("hidden");
+
+    loginMessage.textContent = "";
+    registerMessage.textContent = "";
+});
+registerBtn.addEventListener("click", () => {
+    authSection.classList.remove("hidden");
+    loginFormContainer.classList.add("hidden");
+    registerFormContainer.classList.remove("hidden");
+    loginMessage.textContent = "";
+    registerMessage.textContent = "";
+});
+authCloseButton.addEventListener("click", () => {
+    authSection.classList.add("hidden");
+});
+loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const email = document.getElementById("login-email").value.trim();
+    const password = document.getElementById("login-password").value;
+    try {
+        const response = await fetch("http://localhost:5000/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            loginMessage.textContent = data.message;
+            return;
+        }
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem(
+            "loggedInUser",
+            JSON.stringify(data.user)
+        );
+        authToken = data.token;
+        loggedInUser = data.user;
+        userWelcome.textContent = `✨ Welcome ${loggedInUser.username} 👋`; 
+        userWelcome.classList.remove("hidden");
+        loginMessage.textContent = "Login successful!";
+        messageArea.textContent = "";
+        loginBtn.classList.add("hidden");
+        registerBtn.classList.add("hidden");
+        logoutBtn.classList.remove("hidden");
+        authSection.classList.add("hidden");
+        await loadFavoritesFromBackend();
+        console.log("Logged in user:", loggedInUser);
+
+    } catch (error) {
+        console.log(error);
+        loginMessage.textContent =
+            "Unable to login. Please try again.";
+    }
+});
+registerForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const username =
+        document.getElementById("register-username").value.trim();
+    const email =
+        document.getElementById("register-email").value.trim();
+    const password =
+        document.getElementById("register-password").value;
+    try {
+        const response = await fetch(
+            "http://localhost:5000/api/register",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: username,
+                    email: email,
+                    password: password
+                })
+            }
+        );
+        const data = await response.json();
+        if (!response.ok) {
+            registerMessage.textContent = data.message;
+            return;
+        }
+        registerMessage.textContent =
+            "Registration successful! You can now login.";
+        registerForm.reset();
+    } catch (error) {
+        console.log(error);
+        registerMessage.textContent =
+            "Unable to register. Please try again.";
+    }
+});
+logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("loggedInUser");
+    authToken = null;
+    loggedInUser = null;
+    favorites = [];
+    userWelcome.textContent = "";
+    userWelcome.classList.add("hidden");
+    resultsGrid.innerHTML = "";
+    resultsGrid.dataset.page = "home";
+    sectionTitle.textContent = "🍽 Discover Recipes";
+    sectionTitle.classList.remove("favorite-title");
+    homeLink.classList.add("active");
+    favoritesLink.classList.remove("active");
+    loginBtn.classList.remove("hidden");
+    registerBtn.classList.remove("hidden");
+    logoutBtn.classList.add("hidden");
+    messageArea.textContent =
+        "You have been logged out.";
+    console.log("User logged out.");
+});

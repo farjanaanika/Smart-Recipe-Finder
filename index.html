@@ -19,11 +19,68 @@
     <li><a href="#" id="home-link" class="active">Home</a></li>
     <li><a href="#" id="favorites-link">❤️ Favorites</a></li>
     <li><a href="about.html">About</a></li>
-</ul>
+    <li><button id="login-btn" class="auth-btn">Login</button></li>
+    <li><button id="register-btn" class="auth-btn">Register</button></li>
+    <li>
+        <button id="logout-btn" class="auth-btn hidden">Logout</button>
+    </li>
+    <li>
+    <span id="user-welcome" class="user-welcome hidden"></span>
+   </li>
+  </ul>
 <button id="theme-toggle" class="theme-toggle">
     🌙
 </button>
-</nav>     
+</nav> 
+<div id="auth-section" class="auth-section hidden">
+    <button id="auth-close-button" class="auth-close-button">&times;</button>
+    <div id="login-form-container" class="auth-form-container">
+        <h2>Login</h2>
+        <form id="login-form">
+            <input
+                type="email"
+                id="login-email"
+                placeholder="Email"
+                required
+            >
+            <input
+                type="password"
+                id="login-password"
+                placeholder="Password"
+                required
+            >
+            <button type="submit">Login</button>
+        </form>
+        <p id="login-message"></p>
+    </div>
+    <div id="register-form-container" class="auth-form-container hidden">
+        <h2>Create Account</h2>
+        <form id="register-form">
+            <input
+                type="text"
+                id="register-username"
+                placeholder="Username"
+                required
+            >
+            <input
+                type="email"
+                id="register-email"
+                placeholder="Email"
+                required
+            >
+            <input
+                type="password"
+                id="register-password"
+                placeholder="Password"
+                required
+            >
+            <button type="submit">Register</button>
+        </form>
+
+        <p id="register-message"></p>
+    </div>
+
+</div>    
     <section class="hero">
     <h1>Find Your Perfect Recipe</h1>
     <p>Explore delicious recipes from around the world and discover your next favorite meal.</p>
@@ -74,7 +131,6 @@
           </div>
           </div>
           </div>
-</section>
     <footer class="footer">
     <div class="footer-content">
         <h2>🍽 Smart Recipe Finder</h2>
