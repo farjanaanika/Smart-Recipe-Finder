@@ -40,7 +40,7 @@ Smart Recipe Finder is a full-stack web application that helps users discover re
 
 ## 📁 Project Structure
 
-```
+```text
 Smart-Recipe-Finder/
 │
 ├── frontend/
