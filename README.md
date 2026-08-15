@@ -1,4 +1,4 @@
-```markdown
+
 # 🍽 Smart Recipe Finder
 
 Smart Recipe Finder is a full-stack web application that helps users discover recipes, search by recipe name or ingredients, browse recipes by category, view detailed cooking instructions, and save their favorite recipes.
