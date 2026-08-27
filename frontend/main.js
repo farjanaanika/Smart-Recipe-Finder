@@ -495,7 +495,7 @@ async function toggleFavorite(recipe) {
         );
         if (exists) {
             const response = await fetch(
-                `http://localhost:5000/api/favorites/${recipe.idMeal}`,
+                `https://smart-recipe-finder-rfot.onrender.com/api/favorites/${recipe.idMeal}`,
                 {
                     method: "DELETE",
                     headers: {
@@ -512,7 +512,7 @@ async function toggleFavorite(recipe) {
 
         } else {
             const response = await fetch(
-                "http://localhost:5000/api/favorites",
+                "https://smart-recipe-finder-rfot.onrender.com/api/favorites",
                 {
                     method: "POST",
                     headers: {
@@ -543,7 +543,7 @@ async function loadFavoritesFromBackend() {
             return;
         }
         const response = await fetch(
-            "http://localhost:5000/api/favorites",
+            "https://smart-recipe-finder-rfot.onrender.com/api/favorites",
             {
                 headers: {
                     "Authorization": `Bearer ${authToken}`
@@ -631,7 +631,7 @@ loginForm.addEventListener("submit", async (event) => {
     const email = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value;
     try {
-        const response = await fetch("http://localhost:5000/api/login", {
+        const response = await fetch("https://smart-recipe-finder-rfot.onrender.com/api/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -680,7 +680,7 @@ registerForm.addEventListener("submit", async (event) => {
         document.getElementById("register-password").value;
     try {
         const response = await fetch(
-            "http://localhost:5000/api/register",
+            "https://smart-recipe-finder-rfot.onrender.com/api/register",
             {
                 method: "POST",
                 headers: {

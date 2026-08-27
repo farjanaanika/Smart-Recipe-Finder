@@ -102,7 +102,7 @@ node server.js
 The backend will run at:
 
 ```text
-http://localhost:5000
+https://smart-recipe-finder-rfot.onrender.com
 ```
 
 ### 6. Run the Frontend
