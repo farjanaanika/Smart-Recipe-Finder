@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -5,7 +6,7 @@ const Favorite = require("./models/Favorite");
 const User = require("./models/User");
 const app = express();
 const jwt = require("jsonwebtoken");
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 const JWT_SECRET = "smart-recipe-finder-secret";
 function authenticateToken(req, res, next) {
     const authHeader = req.headers["authorization"];
@@ -27,7 +28,7 @@ function authenticateToken(req, res, next) {
 }
 app.use(cors());
 app.use(express.json());
-mongoose.connect("mongodb://127.0.0.1:27017/smartRecipeFinder")
+mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log("MongoDB connected successfully!");
     })
