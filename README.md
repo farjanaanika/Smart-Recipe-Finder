@@ -33,7 +33,7 @@ Smart Recipe Finder is a full-stack web application that helps users discover re
 
 - Node.js
 - Express.js
-- MongoDB
+- MongoDB Atlas
 - Mongoose
 - JSON Web Token (JWT)
 - CORS
